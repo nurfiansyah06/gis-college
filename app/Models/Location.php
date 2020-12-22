@@ -9,7 +9,7 @@ class Location extends Model
 {
     protected $table = "locations";
     protected $fillable = [
-        'title','description','long','lat','address','height'
+        'title','description','long','lat','address','height','image'
     ];
 
     use HasFactory;

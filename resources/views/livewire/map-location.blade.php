@@ -17,20 +17,58 @@
                         Form
                     </div>
                     <div class="card-body">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="Longtitude">Longtitude</label>
-                                    <input wire:model="long" type="text" name="" id="">
+                        <form
+                            @if($isEdit)
+                                wire:submit.prevent="updateLocation"
+                            @else
+                                wire:submit.prevent="saveLocation"
+                            @endif
+                        >
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="Longtitude">Longtitude</label>
+                                        <input wire:model="long" type="text" name="" id="">
+                                        @error('long') <small class="text-danger">{{ $message }}</small> @enderror
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label for="Longtitude">Latitude</label>
+                                        <input wire:model="lat" type="text" name="" id="">
+                                        @error('lat') <small class="text-danger">{{ $message }}</small> @enderror
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="Longtitude">Latitude</label>
-                                    <input wire:model="lat" type="text" name="" id="">
-                                </div>
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input wire:model="title" type="text" class="form-control">
+                                @error('title') <small class="text-danger">{{ $message }}</small> @enderror
                             </div>
-                        </div>
+                            <div class="form-group">
+                                <label for="title">Description</label>
+                                <textarea wire:model="description" type="text" class="form-control"></textarea>
+                                @error('description') <small class="text-danger">{{ $message }}</small> @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="title">Gambar Banjir</label>
+                                <div class="custom-file">
+                                    <input wire:model="image" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
+                                    <label class="custom-file-label" for="inputGroupFile01"></label>
+                                </div>
+                                @error('image') <small class="text-danger">{{ $message }}</small> @enderror
+                                @if($image)
+                                    <img src="{{ $image->temporaryUrl() }}" class="img-fluid" alt="">
+                                @endif
+
+                                @if($imageUrl && !$image)
+                                    <img src="{{ asset('/storage/images/'.$imageUrl) }}" class="img-fluid" alt="">
+                                @endif
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-dark text-white btn-block">Simpan Lokasi</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -76,6 +114,8 @@
                     markerElement.style.width = '30px'
                     markerElement.style.height = '30px'
 
+                    const imageStorage = '{{ asset("/storage/images") }}' + '/' + image
+
                     const content = `
                         <div style="overflow-y,auto;max-height:400px,width:100%">
                             <table>
@@ -86,7 +126,7 @@
                                     </tr>
                                     <tr>
                                         <td>Gambar</td>
-                                        <td><img src="${image}" class="img-fluid" loading="lazy"></td>
+                                        <td><img src="${imageStorage}" class="img-fluid" loading="lazy"></td>
                                     </tr>
                                     <tr>
                                         <td>Tinggi Banjir</td>
@@ -104,6 +144,10 @@
                             </table>
                         </div>
                     `
+                    markerElement.addEventListener('click', (e) => {
+                        const locationId = e.toElement.id
+                        @this.findLocationById(locationId)
+                    })
 
                     const popUp = new mapboxgl.Popup ({
                         offset:25
@@ -117,7 +161,17 @@
                 });
             }
 
+
             loadLocations({!! $geoJson !!});
+            window.addEventListener('locationAdded', (e) => {
+                loadLocations(JSON.parse(e.detail))
+            });
+
+            window.addEventListener('locationUpdated', (e) => {
+                loadLocations(JSON.parse(e.detail))
+                $('.mapboxgl-popup').remove()
+            });
+
             var geocoder = new MapboxGeocoder({ // Initialize the geocoder
                 accessToken: mapboxgl.accessToken, // Set the access token
                 placeholder: 'Pencarian Lokasi Kota Semarang',

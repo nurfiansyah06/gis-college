@@ -11,7 +11,24 @@
         .card {
             border-radius: 20px;
         }
+
+        .tambah-lokasi {
+            position: absolute;
+            z-index: 10;
+            margin-top: 20px;
+            margin-left: 20px;
+        }
+
+        .tambah-button {
+            border-radius: 14px;
+            width: 200px;
+            font-size: 20px;
+            font-weight: bold;
+        }
     </style>
+    <div class="tambah-lokasi">
+        <a href="{{ url('/addlocation') }}" class="btn btn-success tambah-button">Tambah Lokasi</a>
+    </div>
     <div class="legend">
         <div class="card">
             <div class="card-body">
@@ -100,20 +117,24 @@
                 const pictureLocation = '{{asset("/storage/images")}}' + '/' + image
 
                 const content = `
-                <div style="overflow-y: auto; max-height:400px;width:100%;">
-                    <table class="table table-sm mt-2">
+                <div style="overflow-y: scroll; height:200px;width:100%;">
+                    <table class="table table-borderless table-sm mt-1">
                          <tbody>
                             <tr>
-                                <td>Title</td>
+                                <td>Nama Lokasi</td>
                                 <td>${title}</td>
                             </tr>
                             <tr>
-                                <td>Picture</td>
+                                <td>Foto Banjir</td>
                                 <td><img src="${pictureLocation}" loading="lazy" class="img-fluid"/></td>
                             </tr>
                             <tr>
-                                <td>Description</td>
+                                <td>Deskripsi</td>
                                 <td>${description}</td>
+                            </tr>
+                            <tr>
+                                <td>Ketinggian</td>
+                                <td>${height} Meter</td>
                             </tr>
                         </tbody>
                     </table>

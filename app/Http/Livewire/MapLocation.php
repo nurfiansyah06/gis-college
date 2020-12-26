@@ -14,7 +14,7 @@ class MapLocation extends Component
     use WithFileUploads;
 
     public $count = 5;
-    public $locationId,$long,$lat,$title,$description,$image;
+    public $locationId,$long,$lat,$title,$description,$image,$height;
     public $imageUrl;
     public $geoJson;
     public $isEdit = false;
@@ -72,6 +72,7 @@ class MapLocation extends Component
         $this->validate([
             'long' => 'required',
             'lat' => 'required',
+            'height' => 'required',
             'title' => 'required',
             'description' => 'required',
             'image' => 'image|max:2048|required',
@@ -89,6 +90,7 @@ class MapLocation extends Component
             'long' => $this->long,
             'lat' => $this->lat,
             'title' => $this->title,
+            'height' => $this->height,
             'description' => $this->description,
             'image' => $imageName,
             'user_id' => Auth::id(),
@@ -105,6 +107,7 @@ class MapLocation extends Component
         $this->validate([
             'long' => 'required',
             'lat' => 'required',
+            'height' => 'required',
             'title' => 'required',
             'description' => 'required',
         ]);
@@ -122,6 +125,7 @@ class MapLocation extends Component
 
             $updateData = [
                 'title' => $this->title,
+                'height' => $this->height,
                 'description' => $this->description,
                 'image' => $imageName,
             ];
@@ -153,6 +157,7 @@ class MapLocation extends Component
         $this->long = '';
         $this->lat = '';
         $this->title = '';
+        $this->height = '';
         $this->description = '';
         $this->image = '';
         $this->imageUrl = '';
@@ -166,6 +171,7 @@ class MapLocation extends Component
         $this->long = $location->long;
         $this->lat = $location->lat;
         $this->title = $location->title;
+        $this->height = $location->height;
         $this->description = $location->description;
         $this->isEdit = true;
         $this->imageUrl = $location->image;

@@ -1,75 +1,87 @@
-<div>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">
-                        MAP
-                    </div>
-                    <div class="card-body">
-                        <div wire:ignore id='map' style='width: 100%; height: 75vh;'></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        Form
-                    </div>
-                    <div class="card-body">
-                        <form
-                            @if($isEdit)
-                                wire:submit.prevent="updateLocation"
-                            @else
-                                wire:submit.prevent="saveLocation"
-                            @endif
-                        >
-                            <div class="row">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="Longtitude">Longtitude</label>
-                                        <input wire:model="long" type="text" name="" id="">
-                                        @error('long') <small class="text-danger">{{ $message }}</small> @enderror
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label for="Longtitude">Latitude</label>
-                                        <input wire:model="lat" type="text" name="" id="">
-                                        @error('lat') <small class="text-danger">{{ $message }}</small> @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="title">Title</label>
-                                <input wire:model="title" type="text" class="form-control">
-                                @error('title') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="title">Description</label>
-                                <textarea wire:model="description" type="text" class="form-control"></textarea>
-                                @error('description') <small class="text-danger">{{ $message }}</small> @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="title">Gambar Banjir</label>
-                                <div class="custom-file">
-                                    <input wire:model="image" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-                                    <label class="custom-file-label" for="inputGroupFile01"></label>
-                                </div>
-                                @error('image') <small class="text-danger">{{ $message }}</small> @enderror
-                                @if($image)
-                                    <img src="{{ $image->temporaryUrl() }}" class="img-fluid" alt="">
-                                @endif
 
-                                @if($imageUrl && !$image)
-                                    <img src="{{ asset('/storage/images/'.$imageUrl) }}" class="img-fluid" alt="">
-                                @endif
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-dark text-white">Maps</div>
+                <div wire:ignore id="map" style='width: 100%; height: 80vh;' ></div>
+                <!-- <pre wire:ignore id="info"></pre> -->
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                   <div class="d-flex justify-content-between align-items-center">
+                       <span>Form</span>
+                       @if($isEdit)
+                       <button wire:click="clearForm" class="btn btn-success active">New Location</button>
+                       @endif
+                   </div>
+                </div>
+                <div class="card-body" style="background-color: #454647">
+                    <form @if($isEdit)
+                        wire:submit.prevent="update"
+                        @else
+                        wire:submit.prevent="store"
+                        @endif
+                    >
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="text-white">Longtitude</label>
+                                    <input type="text" wire:model="long" class="form-control dark-input"
+                                        {{$isEdit ? 'disabled' : null}}
+                                    />
+                                    <label class="text-white">Tell use longtitude coordinate</label>
+                                     @error('long') <small class="text-danger">{{$message}}</small>@enderror
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <button type="submit" class="btn btn-dark text-white btn-block">Simpan Lokasi</button>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="text-white">Latitude</label>
+                                    <input type="text" wire:model="lat" class="form-control dark-input"
+                                        {{$isEdit ? 'disabled' : null}}
+                                    />
+                                    <label class="text-white">Tell use latitude coordinate</label>
+                                     @error('lat') <small class="text-danger">{{$message}}</small>@enderror
+                                </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="text-white">Title</label>
+                            <input type="text" wire:model="title" class="form-control dark-input" />
+                            <label class="text-white">Name of location</label>
+                             @error('title') <small class="text-danger">{{$message}}</small>@enderror
+                        </div>
+                        <div class="form-group">
+                            <label class="text-white">Description</label>
+                            <textarea wire:model="description" class="form-control dark-input" ></textarea>
+                            <label class="text-white">Location Description</label>
+                             @error('description') <small class="text-danger">{{$message}}</small>@enderror
+                        </div>
+                        <div class="form-group">
+                            <label class="text-white">Image</label>
+                                <div class="custom-file dark-input">
+                                <input wire:model="image" type="file" class="custom-file-input" id="customFile">
+                                <label class="custom-file-label dark-input" for="customFile">Choose file</label>
+                                </div>
+                            <label class="text-white">Picture of Location</label>
+                            @error('image') <small class="text-danger">{{$message}}</small>@enderror
+                            @if($image)
+                                <img src="{{$image->temporaryUrl()}}" class="img-fluid" alt="Preview Image">
+                            @endif
+                            @if($imageUrl && !$image)
+                                <img src="{{asset('/storage/images/'.$imageUrl)}}" class="img-fluid" alt="Preview Image">
+                            @endif
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn active btn-{{$isEdit ? 'success text-white' : 'primary'}} btn-block">{{$isEdit ? 'Update Location' : 'Submit Location'}}</button>
+                            @if($isEdit)
+                            <button wire:click="deleteLocationById" type="button" class="btn btn-danger active btn-block">Delete Location</button>
+                            @endif
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -78,203 +90,140 @@
 
 
 
+<div id="info" style="display:none"></div>
+
+
+
 @push('script')
-    <script>
-        document.addEventListener('livewire:load', () => {
-            const defaultLocation = [110.4229055130026, -6.991840834967931];
-
-            mapboxgl.accessToken = '{{ env('MAPBOX_KEY') }}';
-            var map = new mapboxgl.Map({
-                container: 'map',
-                center : defaultLocation,
-                zoom : 11.15,
-                // style: 'mapbox://styles/mapbox/streets-v11'
-            });
-
-            // var marker = new mapboxgl.Marker() // initialize a new marker
-            // .setLngLat([110.4229055130026, -6.991840834967931]) // Marker [lng, lat] coordinates
-            // .addTo(map);
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 
-            const loadLocations = (geoJson) => {
-                geoJson.features.forEach((location) => {
-                    const {geometry, properties} = location
-                    const {iconSize, locationId, title, image, address, height, description} = properties
+<script>
+   document.addEventListener('livewire:load',  ()  => {
 
-                    let markerElement = document.createElement('div')
-                    markerElement.className = 'marker' + locationId
-                    markerElement.id = locationId
+        const defaultLocation = [110.4229055130026, -6.991840834967931];
+        const coordinateInfo = document.getElementById('info');
 
-                    if (height < 50) {
-                        markerElement.style.backgroundImage = 'url(https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png)'
-                    } else {
-                        markerElement.style.backgroundImage = 'url(https://image.flaticon.com/icons/png/512/37/37134.png)'
-                    }
-                    markerElement.style.backgroundSize = 'cover'
-                    markerElement.style.width = '30px'
-                    markerElement.style.height = '30px'
+        mapboxgl.accessToken = "{{env('MAPBOX_KEY')}}";
+        let map = new mapboxgl.Map({
+            container: "map",
+            center: defaultLocation,
+            zoom: 11.15,
+            style: "mapbox://styles/mapbox/streets-v11"
+        });
 
-                    const imageStorage = '{{ asset("/storage/images") }}' + '/' + image
+        map.addControl(new mapboxgl.NavigationControl());
 
-                    const content = `
-                        <div style="overflow-y,auto;max-height:400px,width:100%">
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <td>Judul</td>
-                                        <td>${title}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Gambar</td>
-                                        <td><img src="${imageStorage}" class="img-fluid" loading="lazy"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tinggi Banjir</td>
-                                        <td>${height}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Alamat</td>
-                                        <td>${address}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Deskripsi</td>
-                                        <td>${description}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    `
-                    markerElement.addEventListener('click', (e) => {
-                        const locationId = e.toElement.id
-                        @this.findLocationById(locationId)
-                    })
+        const loadGeoJSON = (geojson) => {
 
-                    const popUp = new mapboxgl.Popup ({
-                        offset:25
-                    }).setHTML(content).setMaxWidth("400px")
+            geojson.features.forEach(function (marker) {
+                const {geometry, properties} = marker
+                const {iconSize, locationId, title, image, description} = properties
 
-                    new mapboxgl.Marker(markerElement)
-                    .setLngLat(geometry.coordinates)
-                    .setPopup(popUp)
-                    .addTo(map)
+                let el = document.createElement('div');
+                el.className = 'marker' + locationId;
+                el.id = locationId;
+                el.style.backgroundImage = 'url({{asset("blue.png")}})';
+                el.style.backgroundSize = 'cover';
+                el.style.width = iconSize[0] + 'px';
+                el.style.height = iconSize[1] + 'px';
 
-                });
-            }
+                const pictureLocation = '{{asset("/storage/images")}}' + '/' + image
 
+                const content = `
+                <div style="overflow-y: auto; max-height:400px;width:100%;">
+                    <table class="table table-sm mt-2">
+                         <tbody>
+                            <tr>
+                                <td>Title</td>
+                                <td>${title}</td>
+                            </tr>
+                            <tr>
+                                <td>Picture</td>
+                                <td><img src="${pictureLocation}" loading="lazy" class="img-fluid"/></td>
+                            </tr>
+                            <tr>
+                                <td>Description</td>
+                                <td>${description}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                `;
 
-            loadLocations({!! $geoJson !!});
-            window.addEventListener('locationAdded', (e) => {
-                loadLocations(JSON.parse(e.detail))
-            });
+                let popup = new mapboxgl.Popup({ offset: 25 }).setHTML(content).setMaxWidth("400px")
+;
 
-            window.addEventListener('locationUpdated', (e) => {
-                loadLocations(JSON.parse(e.detail))
-                $('.mapboxgl-popup').remove()
-            });
-
-            var geocoder = new MapboxGeocoder({ // Initialize the geocoder
-                accessToken: mapboxgl.accessToken, // Set the access token
-                placeholder: 'Pencarian Lokasi Kota Semarang',
-                localGeocoder:  console.log(coordinatesGeocoder),
-                // bbox : [110.40878890731341,-7.1369851555135995,110.40701496412919,6.9515403289657485],
-                proximity : {
-                    longtitude : 110.4229055130026,
-                    latitude : -6.991840834967931
-                },
-                mapboxgl: mapboxgl, // Set the mapbox-gl instance
-                marker: false, // Do not use the default marker style
-            });
-
-            // Add the geocoder to the map
-            map.addControl(geocoder);
-                // console.log(geocoder);
-
-            var coordinatesGeocoder = function (query) {
-                // match anything which looks like a decimal degrees coordinate pair
-                var matches = query.match(
-                    /^[ ]*(?:Lat: )?(-?\d+\.?\d*)[, ]+(?:Lng: )?(-?\d+\.?\d*)[ ]*$/i
-                );
-                if (!matches) {
-                    return null;
-                }
-
-                    function coordinateFeature(lng, lat) {
-                    return {
-                        center: [lng, lat],
-                        geometry: {
-                        type: 'Point',
-                        coordinates: [lng, lat]
-                    },
-                        place_name: 'Lat: ' + lat + ' Lng: ' + lng,
-                        place_type: ['coordinate'],
-                        properties: {},
-                        type: 'Feature'
-                        };
-                    }
-
-                    var coord1 = Number(matches[1]);
-                    var coord2 = Number(matches[2]);
-                    var geocodes = [];
-
-                    if (coord1 < -90 || coord1 > 90) {
-                    // must be lng, lat
-                        geocodes.push(coordinateFeature(coord1, coord2));
-                    }
-
-                    if (coord2 < -90 || coord2 > 90) {
-                    // must be lat, lng
-                        geocodes.push(coordinateFeature(coord2, coord1));
-                    }
-
-                    if (geocodes.length === 0) {
-                    // else could be either lng, lat or lat, lng
-                        geocodes.push(coordinateFeature(coord1, coord2));
-                        geocodes.push(coordinateFeature(coord2, coord1));
-                    }
-
-                };
-
-
-            // After the map style has loaded on the page,
-            // add a source layer and default styling for a single point
-            map.on('load', function() {
-                map.addSource('single-point', {
-                    type: 'geojson',
-                    data: {
-                    type: 'FeatureCollection',
-                    features: []
-                    }
+                el.addEventListener('click', (e) => {
+                    const locationId = e.toElement.id
+                    @this.findLocationById(locationId)
                 });
 
-                map.addLayer({
-                    id: 'point',
-                    source: 'single-point',
-                    type: 'circle',
-                    paint: {
-                    'circle-radius': 10,
-                    'circle-color': '#448ee4'
-                    }
-                });
-
-                // Listen for the `result` event from the Geocoder
-                // `result` event is triggered when a user makes a selection
-                //  Add a marker at the result's coordinates
-                geocoder.on('result', function(e) {
-                    map.getSource('single-point').setData(e.result.geometry);
-                });
+                new mapboxgl.Marker(el)
+                .setLngLat(geometry.coordinates)
+                .setPopup(popup)
+                .addTo(map);
             });
-            const style = "outdoors-v11"
-            map.setStyle(`mapbox://styles/mapbox/${style}`)
+        }
 
-            map.addControl(new mapboxgl.NavigationControl())
+        loadGeoJSON({!! $geoJson !!})
 
-            map.on('click', (e) => {
-                const longtitude = e.lngLat.lng
-                const latitude = e.lngLat.lat
-
-                @this.long = longtitude;
-                @this.lat = latitude;
-            })
+        window.addEventListener('locationAdded', (e) => {
+            swal({
+                title: "Location Added!",
+                text: "Your location has been save sucessfully!",
+                icon: "success",
+                button: "Ok",
+            }).then((value) => {
+                loadGeoJSON(JSON.parse(e.detail))
+            });
         })
-    </script>
+
+        window.addEventListener('deleteLocation', (e) => {
+            console.log(e.detail);
+            swal({
+                title: "Location Delete!",
+                text: "Your location deleted sucessfully!",
+                icon: "success",
+                button: "Ok",
+            }).then((value) => {
+               $('.marker' + e.detail).remove();
+               $('.mapboxgl-popup').remove();
+            });
+        })
+
+        window.addEventListener('updateLocation', (e) => {
+            console.log(e.detail);
+            swal({
+                title: "Location Update!",
+                text: "Your location updated sucessfully!",
+                icon: "success",
+                button: "Ok",
+            }).then((value) => {
+               loadGeoJSON(JSON.parse(e.detail))
+               $('.mapboxgl-popup').remove();
+            });
+        })
+
+        //light-v10, outdoors-v11, satellite-v9, streets-v11, dark-v10
+        const style = "dark-v10"
+        map.setStyle(`mapbox://styles/mapbox/${style}`);
+
+        const getLongLatByMarker = () => {
+            const lngLat = marker.getLngLat();
+            return 'Longitude: ' + lngLat.lng + '<br />Latitude: ' + lngLat.lat;
+        }
+
+        map.on('click', (e) => {
+            if(@this.isEdit){
+                return
+            }else{
+                coordinateInfo.innerHTML = JSON.stringify(e.point) + '<br />' + JSON.stringify(e.lngLat.wrap());
+                @this.long = e.lngLat.lng;
+                @this.lat = e.lngLat.lat;
+            }
+        });
+    })
+</script>
 @endpush

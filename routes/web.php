@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Livewire\MapLocation;
+use App\Http\Livewire\Map;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,4 +22,5 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/map', MapLocation::class);
+Route::get('/addlocation', MapLocation::class);
+Route::get('/map', Map::class);

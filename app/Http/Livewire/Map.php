@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Models\Location;
 
-class MapLocation extends Component
+class Map extends Component
 {
     use WithFileUploads;
 
@@ -57,7 +57,7 @@ class MapLocation extends Component
     public function render()
     {
         $this->getLocations();
-        return view('livewire.map-location');
+        return view('livewire.map');
     }
 
     public function previewImage(){
@@ -85,7 +85,7 @@ class MapLocation extends Component
             $imageName
         );
 
-        Location::create([
+        Marker::create([
             'long' => $this->long,
             'lat' => $this->lat,
             'title' => $this->title,
@@ -170,5 +170,4 @@ class MapLocation extends Component
         $this->isEdit = true;
         $this->imageUrl = $location->image;
     }
-
 }
